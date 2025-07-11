@@ -86,6 +86,14 @@ mop1_3_all <- mop(m = crop(capca2, b1_3v, mask = TRUE), g = capca2,
                   where_distance = "all")
 
 
+# plot in environmental space blocks 1-3 vs block4
+x11()
+plot(as.data.frame(crop(capca2, b1_3v, mask = TRUE), cells = FALSE),
+     col = "gray2", pch = 16, xlim = c(-7.3, 8.6), ylim = c(-6.1, 7.5))
+points(as.data.frame(crop(capca2, b4), cells = FALSE),
+       col = alpha("red", 0.5), pch = 3)
+
+
 # plots to visualize results
 x11()
 par(mfrow = c(2, 3))
