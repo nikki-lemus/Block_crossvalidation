@@ -1,9 +1,12 @@
 ################################################################################
 # Project: Data partitioning methods and model transferability
 # Script: Initial exploration in geographic regions
-# Author(s): Marlon E. Cobos
+# Author(s): Marlon E. Cobos 
 # Date: 10/07/2025  # dd/mm/yyyy
 ################################################################################
+
+# Note: If you are working on this project, I recommend you make a copy of this 
+# script to start exploring with your examples.
 
 
 # Setting R up -----------------------------------------------------------------
