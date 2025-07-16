@@ -91,7 +91,7 @@ x11()
 plot(as.data.frame(crop(capca2, b1_3v, mask = TRUE), cells = FALSE),
      col = "gray2", pch = 16, xlim = c(-7.3, 8.6), ylim = c(-6.1, 7.5))
 points(as.data.frame(crop(capca2, b4), cells = FALSE),
-       col = alpha("red", 0.5), pch = 3)
+       col = alpha("red", 0.25), pch = 3)
 
 
 # plots to visualize results
