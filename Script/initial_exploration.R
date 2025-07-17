@@ -2,7 +2,7 @@
 # Project: Data partitioning methods and model transferability
 # Script: Initial exploration in geographic regions
 # Author(s): Marlon E. Cobos 
-# Date: 10/07/2025  # dd/mm/yyyy
+# Modified: 17/07/2025  # dd/mm/yyyy
 ################################################################################
 
 # Note: If you are working on this project, I recommend you make a copy of this 
@@ -23,6 +23,9 @@ library(geodata)
 library(mop)
 library(kuenm2)
 library(scales)
+
+# loading functions
+source("Script/functions.R")
 # ------------------------------------------------------------------------------
 
 
@@ -52,18 +55,7 @@ cawc <- crop(sawc, extca)
 plot(cawc$wc2.1_5m_bio_1)
 
 # partitions
-b1 <- ext(c(-57, mean(c(-57, -43)), mean(c(-20, -5.5)), -5.5))
-lines(b1)
-
-b2 <- ext(c(mean(c(-57, -43)), -43, mean(c(-20, -5.5)), -5.5))
-lines(b2)
-
-b3 <- ext(c(-57, mean(c(-57, -43)), -20, mean(c(-20, -5.5))))
-lines(b3)
-
-b4 <- ext(c(mean(c(-57, -43)), -43, -20, mean(c(-20, -5.5))))
-lines(b4)          
-
+blist <- block_extents4(ext = extca)
 
 # PCA
 capca <- perform_pca(raster_variables = cawc, center = TRUE, scale = TRUE)
@@ -73,24 +65,14 @@ capca2 <- capca$env[[1:2]]
 
 # Exploratory analysis ---------------------------------------------------------
 # MOP from three blocks to all
-## prepare area for three blocks
-b1_3v <- union(union(vect(b1), vect(b2)), vect(b3))
-crs(b1_3v) <- crs(capca2)
-
-plot(capca2$PC1)
-plot(b1_3v, col = 2, add = TRUE)
-
-## run MOP
-mop1_3_all <- mop(m = crop(capca2, b1_3v, mask = TRUE), g = capca2, 
-                  type = "detailed", calculate_distance = TRUE, 
-                  where_distance = "all")
+area1 <- mop_comb(block_list = blist, vars = capca2, calculate_distance = TRUE)
 
 
 # plot in environmental space blocks 1-3 vs block4
 x11()
-plot(as.data.frame(crop(capca2, b1_3v, mask = TRUE), cells = FALSE),
+plot(as.data.frame(crop(capca2, area1$Comb_123$b3_comb, mask = TRUE), cells = FALSE),
      col = "gray2", pch = 16, xlim = c(-7.3, 8.6), ylim = c(-6.1, 7.5))
-points(as.data.frame(crop(capca2, b4), cells = FALSE),
+points(as.data.frame(crop(capca2, blist$block_4), cells = FALSE),
        col = alpha("red", 0.25), pch = 3)
 
 
@@ -101,12 +83,12 @@ par(mfrow = c(2, 3))
 plot(capca2$PC1, main = "PC1")
 plot(capca2$PC2, main = "PC2")
 
-plot(mop1_3_all$mop_distances, main = "Distance")
-plot(mop1_3_all$mop_basic, main = "Outside ranges")
-plot(mop1_3_all$mop_simple, main = "N variables outside")
+plot(area1$Comb_123$mop_distances, main = "Distance")
+plot(area1$Comb_123$mop_basic, main = "Outside ranges")
+plot(area1$Comb_123$mop_simple, main = "N variables outside")
 
-#plot(mop1_3_all$mop_detailed$towards_low_combined,  # nothing is outside low end
-#     main = "Variables outside low end")
-plot(mop1_3_all$mop_detailed$towards_high_combined, 
+plot(area1$Comb_123$mop_detailed$towards_low_combined,  
+     main = "Variables outside low end")
+plot(area1$Comb_123$mop_detailed$towards_high_combined, 
      main = "Variables outside high end")
 # ------------------------------------------------------------------------------
