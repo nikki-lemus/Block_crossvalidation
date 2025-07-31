@@ -67,6 +67,29 @@ capca2 <- capca$env[[1:2]]
 # MOP from three blocks to all
 area1 <- mop_comb(block_list = blist, vars = capca2, calculate_distance = TRUE)
 
+# comparing mop distances for every block left out
+ref <- area1[[1]]$b3_comb
+int <- blist[[4]]
+
+disarea_ref <- crop(area1[[1]]$mop_distances, ref, mask = TRUE)
+disarea_int <- crop(area1[[1]]$mop_distances, int)
+
+disval_ref <- as.data.frame(disarea_ref, cell = FALSE)
+disval_int <- as.data.frame(disarea_int, cell = FALSE)
+
+bxvals <- rbind(disval_ref, disval_int)
+bxvals$Areas <- c(rep("Reference", nrow(disval_ref)), rep("Left_out", nrow(disval_int)))
+bxvals$Areas <- as.factor(bxvals$Areas)
+bxvals$Distance <- as.numeric(bxvals$Distance)
+
+colnames(bxvals)[1] <- "Distance"
+
+head(bxvals)
+
+boxplot(data.frame(Reference = disval_ref[, 1], Left_out = disval_int[, 1]), 
+        xlab = "Areas", ylab = "Distances", las = 1)
+
+colMeans(data.frame(Reference = disval_ref[, 1], Left_out = disval_int[, 1]))
 
 # plot in environmental space blocks 1-3 vs block4
 x11()

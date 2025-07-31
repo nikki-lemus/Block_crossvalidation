@@ -1,5 +1,5 @@
 
-block_extents4 <- function(ext) {
+block_extents4 <- function(ext) {  # we need this to work with more than 4 blocks
   blist <- list(
     ext(c(ext[1], mean(c(ext[1], ext[2])), mean(c(ext[3], ext[4])), 
           ext[4])),
@@ -17,7 +17,7 @@ block_extents4 <- function(ext) {
 }
   
 
-mop_comb <- function(block_list, vars, calculate_distance = TRUE) {
+mop_comb <- function(block_list, vars, calculate_distance = TRUE) {  # we need to change this so it can work with more than four blocsk
   bcomb <- combn(1:4, 3)
   
   mop_list <- lapply(1:ncol(bcomb), function (x) {
