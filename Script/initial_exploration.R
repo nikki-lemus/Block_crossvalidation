@@ -71,7 +71,13 @@ area1 <- mop_comb(block_list = blist, vars = capca2, calculate_distance = TRUE)
 # comparing mop distances for every block left out using box plots (violins in process)
 sum_area1 <- summarize_mop_comb(mop_comb_res = area1, block_list = blist)
 
+# plot of summary
 plot_summary(summarize_mop_comb = sum_area1, violin = F, outliers = FALSE)
+
+
+# saving results to avoid running mop again 
+dir.create("Results")
+save(sum_area1, file = "Results/summary_mop_area1.RData")
 
 
 
