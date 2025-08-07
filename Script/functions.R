@@ -109,26 +109,29 @@ plot_summary <- function(summarize_mop_comb, violin = FALSE, outliers = FALSE) {
           axis.line = element_line(color = "black")            # Black axis lines
         )
     } else {
+      if (i %in% c(1, 3)) {
+        yt <- "Distance"
+      } else {
+        yt <- ""
+      }
+      
+      if (i >= 3) {
+        xt <- "Areas"
+      } else {
+        xt <- ""
+      }
+      
       boxplot(Distance ~ Areas, data = summarize_mop_comb[[i]], 
-              outline = outliers)
+              outline = outliers, frame = FALSE, ylab = yt, xlab = xt, las = 1)
       legend("topright", legend = lnam[i], bty = "n")
-      # axis(1)
-      # axis(2)
-      # box(bty = "l")
+      box(bty = "l")
     }
   }
 }
 
 
 
-ggplot2::ggplot(data = bxvals, 
-                aes(x = Areas, y = Distance)) + 
-  geom_violin(fill = "gray75", trim = T) +
-  theme(
-    panel.background = element_rect(fill = "white"),     # White plotting background
-    plot.background = element_rect(fill = "white"),      # White full plot background
-    panel.grid = element_blank(),                        # Remove grid lines
-    axis.line = element_line(color = "black")            # Black axis lines
-  )
+boxplot(Distance ~ Areas, data = bxvals, 
+        outline = outliers, frame = FALSE)
 
 
