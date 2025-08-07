@@ -1,5 +1,6 @@
 
-block_extents4 <- function(ext) {  # we need this to work with more than 4 blocks
+# helper function to make 4 blocks in a region
+block_extents4 <- function(ext) {  
   blist <- list(
     ext(c(ext[1], mean(c(ext[1], ext[2])), mean(c(ext[3], ext[4])), 
           ext[4])),
@@ -17,7 +18,9 @@ block_extents4 <- function(ext) {  # we need this to work with more than 4 block
 }
   
 
-mop_comb <- function(block_list, vars, calculate_distance = TRUE) {  # we need to change this so it can work with more than four blocsk
+# automated mop analysis comparing one block of interest vs three of reference: 
+# makes all of the combinations at a time
+mop_comb <- function(block_list, vars, calculate_distance = TRUE) {  
   bcomb <- combn(1:4, 3)
   
   mop_list <- lapply(1:ncol(bcomb), function (x) {
@@ -41,5 +44,91 @@ mop_comb <- function(block_list, vars, calculate_distance = TRUE) {  # we need t
   return(mop_list)
 }
 
+
+# helper function to plot results comparing distances resulting from mop_comb
+summarize_mop_comb <- function(mop_comb_res, block_list) {
+  
+  bnum <- length(block_list):1
+  res <- lapply(1:length(mop_comb_res), function(x) {
+    ## areas 
+    ref <- mop_comb_res[[x]]$b3_comb
+    int <- block_list[[bnum[x]]]
+    
+    ## mask to areas
+    disarea_ref <- crop(mop_comb_res[[x]]$mop_distances, ref, mask = TRUE)
+    disarea_int <- crop(mop_comb_res[[x]]$mop_distances, int)
+    
+    ## extract values
+    disval_ref <- as.data.frame(disarea_ref, cell = FALSE)
+    disval_int <- as.data.frame(disarea_int, cell = FALSE)
+    disval_all <- as.data.frame(mop_comb_res[[x]]$mop_distances, cell = FALSE)
+    
+    ## organize as a table
+    bxvals <- rbind(disval_ref, disval_int, disval_all)
+    bxvals$Areas <- c(rep("Reference", nrow(disval_ref)), 
+                      rep("Left_out", nrow(disval_int)),
+                      rep("All", nrow(disval_all)))
+    
+    bxvals$Areas <- as.factor(bxvals$Areas)
+    
+    colnames(bxvals)[1] <- "Distance"
+    bxvals$Distance <- as.numeric(bxvals$Distance)
+    
+    return(bxvals)
+  })
+  
+  names(res) <- names(mop_comb_res)
+  
+  return(res)
+}
+
+
+
+# 
+plot_summary <- function(summarize_mop_comb, violin = FALSE, outliers = FALSE) {
+  
+  # plotting settings
+  opar <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(opar))
+  
+  # change settings
+  par(mfrow = c(2, 2), mar = c(4, 4, 0.5, 0.5))
+  
+  lnam <- names(summarize_mop_comb)
+  
+  # plot in loop
+  for (i in 1:length(summarize_mop_comb)) {
+    if (violin) {
+      ggplot2::ggplot(data = summarize_mop_comb[[i]], 
+                      aes(x = Areas, y = Distance)) + 
+        geom_violin(fill = "gray75", trim = outliers) +
+        theme(
+          panel.background = element_rect(fill = "white"),     # White plotting background
+          plot.background = element_rect(fill = "white"),      # White full plot background
+          panel.grid = element_blank(),                        # Remove grid lines
+          axis.line = element_line(color = "black")            # Black axis lines
+        )
+    } else {
+      boxplot(Distance ~ Areas, data = summarize_mop_comb[[i]], 
+              outline = outliers)
+      legend("topright", legend = lnam[i], bty = "n")
+      # axis(1)
+      # axis(2)
+      # box(bty = "l")
+    }
+  }
+}
+
+
+
+ggplot2::ggplot(data = bxvals, 
+                aes(x = Areas, y = Distance)) + 
+  geom_violin(fill = "gray75", trim = T) +
+  theme(
+    panel.background = element_rect(fill = "white"),     # White plotting background
+    plot.background = element_rect(fill = "white"),      # White full plot background
+    panel.grid = element_blank(),                        # Remove grid lines
+    axis.line = element_line(color = "black")            # Black axis lines
+  )
 
 
