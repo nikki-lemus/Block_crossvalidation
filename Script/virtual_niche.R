@@ -21,6 +21,8 @@ plot(bio_SA)
 # preparing data for analyses (from raster to matrix)
 data_T_P <- as.data.frame(bio_SA, xy = TRUE)
 
+plot(data_T_P[, 3:4])
+
 
 # niche range (limits)
 host_niche_range <- cbind(Temperature = c(12, 26), Precipitation = c(700, 2800))
@@ -62,3 +64,4 @@ vd_pre_host <- virtual_data(features = host_niche, from = "prediction",
                             data = data_T_P, prediction = pred_host, n = 200)
 
 points(vd_pre_host[, 1:2], col = "red")
+
