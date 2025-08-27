@@ -10,22 +10,23 @@ wrclim <- worldclim_global(var = "bio", res = 5, path = "Data")
 
 # keeping only temperature and precipitation and masking to SA (BIO 1 and 12)
 ## SA extent
-SAext <- ext(c(-85, -30, -60, 15))
+#long,long, lat, lat?
+AUext <- ext(c(110, 160, -40, -8))
 
 ## cropping and renaming
-bio_SA <- crop(wrclim[[c(1, 12)]], SAext)
-names(bio_SA) <- c("Temperature", "Precipitation")
+bio_AU <- crop(wrclim[[c(1, 12)]], AUext)
+names(bio_AU) <- c("Temperature", "Precipitation")
 
-plot(bio_SA)
+plot(bio_AU)
 
 # preparing data for analyses (from raster to matrix)
-data_T_P <- as.data.frame(bio_SA, xy = TRUE)
+data_T_P <- as.data.frame(bio_AU, xy = TRUE)
 
 plot(data_T_P[, 3:4])
 
 
 # niche range (limits)
-host_niche_range <- cbind(Temperature = c(12, 26), Precipitation = c(700, 2800))
+host_niche_range <- cbind(Temperature = c(20, 30), Precipitation = c(500, 2000))
 host_niche_range
 
 # host virtual niche
@@ -50,7 +51,7 @@ host_niche <- ell_features(centroid = cent, covariance_matrix = varcov,
 
 # host data
 ## predict suitability on bioclimatic data based on ellipsoids
-pred_geo <- evniche:::ell_predict(data = bio_SA, features = host_niche)
+pred_geo <- evniche:::ell_predict(data = bio_AU, features = host_niche)
 
 plot(pred_geo$suitability_trunc)
 
