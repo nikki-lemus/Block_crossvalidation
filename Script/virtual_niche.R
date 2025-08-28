@@ -1,4 +1,4 @@
-remotes::install_github("marlonecobos/evniche")
+#remotes::install_github("marlonecobos/evniche")
 
 library(evniche)
 library(geodata)
@@ -11,7 +11,7 @@ wrclim <- worldclim_global(var = "bio", res = 5, path = "Data")
 # keeping only temperature and precipitation and masking to SA (BIO 1 and 12)
 ## SA extent
 #long,long, lat, lat?
-AUext <- ext(c(110, 160, -40, -8))
+AUext <- ext(c(110, 160, -40, -9.5))
 
 ## cropping and renaming
 bio_AU <- crop(wrclim[[c(1, 12)]], AUext)
