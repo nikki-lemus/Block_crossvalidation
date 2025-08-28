@@ -131,7 +131,3 @@ plot_summary <- function(summarize_mop_comb, violin = FALSE, outliers = FALSE) {
 
 
 
-boxplot(Distance ~ Areas, data = bxvals, 
-        outline = outliers, frame = FALSE)
-
-
