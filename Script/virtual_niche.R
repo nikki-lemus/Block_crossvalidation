@@ -69,7 +69,9 @@ ecor <- vect("Data/vector/selected_eco_mec.gpkg")
 
 ## 50 km buffer 
 ecor50 <- buffer(ecor, width = 50000, quadsegs = 100)
-ecor50 <- aggregate(ecor50, filename = "Data/vector/accessible_area.gpkg")
+ecor50 <- aggregate(ecor50)
+
+writeVector(ecor50, filename = "Data/vector/accessible_area.gpkg")
 
 ## check with a plot
 plot(pred_geo$suitability_trunc)
@@ -81,7 +83,7 @@ bio_acc <- crop(bio_SA, ecor50, mask = TRUE)
 ## bios to data frame
 data_acc <- as.data.frame(bio_acc, xy = TRUE)
 
-## predict again
+## predict again on data
 pred_acc <- evniche:::ell_predict(data = data_acc, longitude = "x", 
                                   latitude = "y", features = host_niche)
 
@@ -92,4 +94,9 @@ vd_pre_host <- virtual_data(features = host_niche, from = "prediction",
                             data = data_acc, prediction = pred_acc, n = 200)
 
 points(vd_pre_host[, 1:2], col = "red")
+
+## save data
+write.csv(vd_pre_host, file = "Results/data_virtual_species.csv", 
+          row.names = FALSE)
+
 
