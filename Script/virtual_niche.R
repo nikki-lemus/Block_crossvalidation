@@ -9,14 +9,17 @@ wrclim <- worldclim_global(var = "bio", res = 5, path = "Data")
 # keeping only temperature and precipitation and masking to SA (BIO 1 and 12)
 ## SA extent
 #long,long, lat, lat?
-AUext <- ext(c(110, 160, -40, -9.5))
+AUext <- ext(c(112, 155, -40,-10))
 
 ## cropping and renaming
 bio_AU <- crop(wrclim[[c(1, 12)]], AUext)
 names(bio_AU) <- c("Temperature", "Precipitation")
 
 plot(bio_AU)
-
+##see min and max temp and precip
+#ran_AU <- crop(wrclim[[c(1, 12)]], "aus_range.gpkg")
+#bio_AU
+#ran_AU
 # preparing data for analyses (from raster to matrix)
 data_T_P <- as.data.frame(bio_AU, xy = TRUE)
 
@@ -28,7 +31,7 @@ evniche:::plot_2D(background = data_T_P[, 3:4],
 
 
 # niche range (limits)
-host_niche_range <- cbind(Temperature = c(20, 30), Precipitation = c(500, 2000))
+host_niche_range <- cbind(Temperature = c(12,25), Precipitation = c(50, 1000))
 host_niche_range
 
 # host virtual niche
@@ -66,20 +69,20 @@ writeRaster(pred_geo$suitability_trunc, filename = "Results/prediction.tif")
 
 ## perform explorations to define ecorregions for accessible area in a GIS
 ## layer with selected ecoregions (I exported selected ecoregions in QGIS)
-ecor <- vect("Data/vector/selected_eco_mec.gpkg")
+ecor <- vect("aus_range.gpkg")
 
 ## 50 km buffer 
 ecor50 <- buffer(ecor, width = 50000, quadsegs = 100)
 ecor50 <- aggregate(ecor50)
 
-writeVector(ecor50, filename = "Data/vector/accessible_area.gpkg")
+writeVector(ecor50, filename = "accessible_area.gpkg")
 
 ## check with a plot
 plot(pred_geo$suitability_trunc)
 lines(ecor50, col = "red", lwd = 2)
 
 ## mask variables to buffer
-bio_acc <- crop(bio_SA, ecor50, mask = TRUE)
+bio_acc <- crop(bio_AU, ecor50, mask = TRUE)
 
 ## bios to data frame
 data_acc <- as.data.frame(bio_acc, xy = TRUE)
